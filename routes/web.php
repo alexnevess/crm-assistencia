@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+use App\Models\Empresa;
+use App\Http\Controllers\EmpresaController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -18,3 +20,10 @@ Route::middleware('auth')->group(function () {
 });
 
 require __DIR__.'/auth.php';
+
+
+//Rotas empresas
+
+Route::get('/nova-empresa', [EmpresaController::class, 'create']);
+Route::post('/empresa',[EmpresaController::class, 'store'])->name('empresa.store');//registra empresa
+
