@@ -23,6 +23,19 @@ class User extends Authenticatable
         'password',
     ];
 
+    public function empresaAfiliada(): BelongsTo // Singular, pois é apenas UMA
+    {
+        // Usa a FK 'empresa_id' na própria tabela 'users'
+        return $this->belongsTo(Empresa::class, 'empresa_id'); 
+    }
+    
+    public function empresaCriada(): HasOne
+    {
+        // Procura a FK 'user_id' na tabela 'empresas'
+        return $this->hasOne(Empresa::class, 'user_id'); 
+    }
+
+
     /**
      * The attributes that should be hidden for serialization.
      *
