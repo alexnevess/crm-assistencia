@@ -10,21 +10,21 @@
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900 dark:text-gray-100">
                     
-                    {{ __("You're logged in!") }}
-                    
                     @if (Auth::user()->empresaAfiliada === null)
                         
                         <div class="mt-4">
-                            <p class="mb-3">Você precisa criar uma empresa para continuar.</p>
-                            
-                            <a href="{{ route('empresa.create') }}" class="text-blue-500 hover:text-blue-700 font-bold underline">
-                                Ir para: Nova Empresa
+                            <p class="mb-3">Você não está afiliado a nehuma empresa! Clique no botão a seguir para criar uma nova empresa.</p>
+
+                            <a
+                                href="{{ route('empresa.create') }}"
+                                class="inline-block px-5 py-1.5 dark:text-[#EDEDEC] border-[#19140035] hover:border-[#1915014a] border text-[#1b1b18] dark:border-[#3E3E3A] dark:hover:border-[#62605b] rounded-sm text-sm leading-normal">
+                                Nova Empresa
                             </a>
                         </div>
                         
                     @else
-                        <p class="mt-4">
-                            Sua empresa atual é: <strong>{{ Auth::user()->empresaAfiliada->nome }}</strong>.
+                        <p class="mt-0">
+                            <strong>{{ Auth::user()->empresaAfiliada->nome }}</strong>
                         </p>
                     @endif
 
