@@ -24,6 +24,6 @@ require __DIR__.'/auth.php';
 
 //Rotas empresas
 
-Route::get('/nova-empresa', [EmpresaController::class, 'create']);
+Route::get('/nova-empresa', [EmpresaController::class, 'create'])->name('empresa.create');
 Route::post('/empresa',[EmpresaController::class, 'store'])->name('empresa.store');//registra empresa
 

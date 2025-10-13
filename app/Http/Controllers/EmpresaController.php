@@ -29,5 +29,7 @@ class EmpresaController extends Controller
         $user->empresa_id = $empresa->id;
         $user->save();
 
+        return view('empresa.create');
+
     }
 }
