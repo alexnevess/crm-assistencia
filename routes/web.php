@@ -19,8 +19,10 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     //Rotas empresas
-    Route::get('/nova-empresa', [EmpresaController::class, 'create'])->name('empresa.create');
-    Route::post('/empresa',[EmpresaController::class, 'store'])->name('empresa.store');//registra empresa
+    Route::get('/empresa/registra', [EmpresaController::class, 'create'])->name('empresa.create');//Redireciona a view com formulário para cria a empresa
+    Route::post('/empresa',[EmpresaController::class, 'store'])->name('empresa.store');//registra empresa atravé do controller
+    Route::get('/empresa/funcionarios', [EmpresaController::class, 'showFuncionarios'])->name('empresa.funcionarios'); //Redireciona para view com o formulário para adicionar novo funcionário
+    Route::get('/empresa/funcionarios/adicionar', [EmpresaController::class, 'adicionaFuncionario'])->name('adiciona.funcionario');
 });
 
 require __DIR__.'/auth.php';

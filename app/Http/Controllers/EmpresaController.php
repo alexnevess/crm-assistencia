@@ -13,6 +13,11 @@ class EmpresaController extends Controller
         return view('empresa.empresa-create');
     }
 
+    public function showFuncionarios()
+    {
+        return view('empresa.empresa-funcionarios');
+    }
+
     public function store(Request $request)
     {
         //validação do nome
@@ -34,6 +39,6 @@ class EmpresaController extends Controller
         $user->save();
 
         return view('dashboard');
-
     }
+
 }
