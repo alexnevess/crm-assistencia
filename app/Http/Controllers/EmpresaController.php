@@ -16,7 +16,23 @@ class EmpresaController extends Controller
 
     public function showFuncionarios()
     {
-        return view('empresa.empresa-funcionarios');
+        $userAdmin = Auth::user();
+        $empresa = $userAdmin->empresaAfiliada;
+
+        if(!$empresa)
+        {
+            return view('dashboard');
+        }
+        
+        $funcionarios = User::where('empresa_id', $empresa->id)
+        ->where('id', '!=', $userAdmin->id)
+        ->orderBy('name')
+        ->get();
+
+        return view('empresa.empresa-funcionarios', [
+            'empresa' => $empresa,
+            'funcionarios' => $funcionarios,
+        ]);
     }
 
     public function adicionaFuncionario()

@@ -21,8 +21,64 @@
                 </div>
             </div>
 
-            {{-- SEÇÃO DA LISTA DE FUNCIONÁRIOS --}}
-            {{-- ... O conteúdo da lista de funcionários que definimos... --}}
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="p-6 text-gray-900 dark:text-gray-100">
+                    <h3 class="text-xl font-semibold mb-4">
+                        Funcionários Atuais ({{ $funcionarios->count() }})
+                    </h3>
+                    
+                    @if (!$empresa)
+                        <p class="text-red-500 dark:text-red-400">
+                            Você precisa ter uma empresa registrada para visualizar funcionários.
+                        </p>
+                    @elseif ($funcionarios->isEmpty())
+                        <p class="text-gray-500 dark:text-gray-400">
+                            Nenhum funcionário vinculado à empresa {{ $empresa->nome }} ainda.
+                        </p>
+                    @else
+                        {{-- Tabela de Listagem --}}
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                                <thead>
+                                    <tr>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nome</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Perfil</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Telefone</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                                    @foreach ($funcionarios as $funcionario)
+                                    <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">
+                                            {{ $funcionario->name }}
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                                            {{ $funcionario->email }}
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                                            {{-- Exibe o perfil em maiúsculas (ou capitalize) --}}
+                                            {{ $funcionario->perfil_acesso ?? 'Não Definido' }}
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                                            {{ $funcionario->telefone ?? 'N/A' }}
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                            {{-- Botões de Ação --}}
+                                            <a href="#" class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-600">
+                                                Gerenciar
+                                            </a>
+                                            {{-- Em breve: Formulário de Remoção --}}
+                                        </td>
+                                    </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    @endif
+                </div>
+            </div>
 
         </div>
     </div>
