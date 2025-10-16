@@ -50,7 +50,7 @@ class EmpresaController extends Controller
 
       public function registraFuncionario(Request $request)
     {
-        // 1. Validação dos dados de entrada
+        // Valida dados do usuário para registro na empresa
         $request->validate([
             'email' => 'required|email|max:255',
             'perfil_acesso' => 'nullable|in:ADMIN,ATENDENTE,TECNICO', 
@@ -61,29 +61,29 @@ class EmpresaController extends Controller
         $userAdmin = Auth::user();
         $empresa = $userAdmin->empresaAfiliada;
 
-        // 2. Garante que o administrador tem uma empresa vinculada
+        // Garante que o administrador tem uma empresa vinculada
         if ($empresa === null) {
             return redirect()->route('dashboard')->with('error', 'Você deve ter uma empresa ativa para adicionar funcionários.');
         }
 
-        // 3. Busca o funcionário pelo email
+        // Busca o funcionário pelo email
         $funcionario = User::where('email', $request->email)->first();
 
-        // 4. Se o usuário não existe, redireciona com erro (seu fluxo atual não cria o usuário)
+        // Se o usuário não existe, redireciona com erro (seu fluxo atual não cria o usuário)
         if (!$funcionario) {
-             return redirect()->route('empresa.funcionarios')->withErrors([
+             return redirect()->route('adiciona.funcionario')->withErrors([
                 'email' => 'Nenhum usuário encontrado com este e-mail. Peça ao funcionário para se cadastrar primeiro.',
             ])->onlyInput('email');
         }
 
-        // 5. Verifica se o funcionário já está vinculado a alguma empresa
+        // Verifica se o funcionário já está vinculado a alguma empresa
         if ($funcionario->empresa_id !== null && $funcionario->empresa_id !== $empresa->id) {
-             return redirect()->route('empresa.funcionarios')->withErrors([
+             return redirect()->route('adiciona.funcionario')->withErrors([
                 'email' => 'Este usuário já está vinculado a outra empresa.',
             ])->onlyInput('email');
         }
         
-        // 6. Atualiza o funcionário com o vínculo e perfil
+        // Atualiza o funcionário com o vínculo e perfil
         $funcionario->empresa_id = $empresa->id;
         
         // Se o perfil_acesso foi fornecido (não é null), atribui.
@@ -97,7 +97,7 @@ class EmpresaController extends Controller
 
         $funcionario->save();
 
-        return redirect()->route('empresa.funcionarios')->with('status', "Funcionário {$funcionario->name} adicionado com sucesso à empresa {$empresa->nome}.");
+        return redirect()->route('adiciona.funcionario')->with('status', "Funcionário {$funcionario->name} adicionado com sucesso à empresa {$empresa->nome}.");
     }
 
 }

@@ -18,8 +18,13 @@
             <option value="ADMIN" {{ old('perfil_acesso') == 'ADMIN' ? 'selected' : '' }}>Admin (Empresa)</option>
         </select>
         <x-input-error :messages="$errors->get('perfil_acesso')" class="mt-2" />
-    </div>
 
+        @if (session('status'))
+                <div class="mb-4 font-medium text-sm text-green-600 dark:text-green-400 bg-green-100 dark:bg-green-800 p-4 rounded-lg">
+                    {{ session('status') }}
+                </div>
+            @endif
+    </div>
         <div class="flex items-center justify-end mt-4">
             <x-primary-button class="ms-4">
                 {{ __('Register') }}
