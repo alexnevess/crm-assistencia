@@ -67,7 +67,7 @@
                                                 @endphp
 
                                                 <select id="perfil_acesso" name="perfil_acesso" 
-                                                        class="border-gray-300 ... rounded-md shadow-sm text-sm" 
+                                                        class="border-gray-300 text-gray-900 rounded-md shadow-sm text-sm" 
                                                         onchange="this.form.submit()">  {{-- <-- AQUI! Quando o valor mudar, o formulário é enviado. --}}
                                                     
                                                     <option value="ATENDENTE" {{ $perfilAtual == 'ATENDENTE' ? 'selected' : '' }}>Atendente</option>
