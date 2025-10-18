@@ -9,7 +9,7 @@
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             
-            {{-- SEÇÃO DE ADIÇÃO MANUAL DE FUNCIONÁRIO (Seu formulário) --}}
+            <!-- Seção de adição de funcionário -->
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-8">
                 <div class="p-6 text-gray-900 dark:text-gray-100">
                     <h3 class="text-lg font-semibold mb-4">Adicionar Funcionário por E-mail</h3>
@@ -58,18 +58,41 @@
                                             {{ $funcionario->email }}
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                                            {{-- Exibe o perfil em maiúsculas (ou capitalize) --}}
-                                            {{ $funcionario->perfil_acesso ?? 'Não Definido' }}
+                                             <form action="{{ route('funcionario.update.perfil', $funcionario->id) }}" method="POST" class="inline-block">
+                                                @csrf
+                                                @method('PUT') <!--  Simula a requisição PUT para atualização  -->
+
+                                                @php
+                                                    $perfilAtual = $funcionario->perfil_acesso;
+                                                @endphp
+
+                                                <select id="perfil_acesso" name="perfil_acesso" 
+                                                        class="border-gray-300 ... rounded-md shadow-sm text-sm" 
+                                                        onchange="this.form.submit()">  {{-- <-- AQUI! Quando o valor mudar, o formulário é enviado. --}}
+                                                    
+                                                    <option value="ATENDENTE" {{ $perfilAtual == 'ATENDENTE' ? 'selected' : '' }}>Atendente</option>
+                                                    <option value="TECNICO" {{ $perfilAtual == 'TECNICO' ? 'selected' : '' }}>Técnico</option>
+                                                    <option value="ADMIN" {{ $perfilAtual == 'ADMIN' ? 'selected' : '' }}>Admin (Empresa)</option>
+                                                </select>
+                                            </form>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                                             {{ $funcionario->telefone ?? 'N/A' }}
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                            {{-- Botões de Ação --}}
-                                            <a href="#" class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-600">
-                                                Gerenciar
-                                            </a>
-                                            {{-- Em breve: Formulário de Remoção --}}
+                                   
+
+                                            <!-- Formulário para exclusão de funcionário -->
+                                            <form action="{{ route('funcionario.remover', $funcionario->id) }}" method="POST" class="inline-block"
+                                                onsubmit="return confirm('Tem certeza que deseja desvincular {{ $funcionario->name }} da sua empresa? Ele perderá o acesso a todos os recursos internos.');">
+                                                @csrf
+                                                @method('DELETE') {{-- Necessário para simular a requisição DELETE --}}
+                                                
+                                                <button type="submit"
+                                                    class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-600">
+                                                    Remover
+                                                </button>
+                                            </form>
                                         </td>
                                     </tr>
                                     @endforeach

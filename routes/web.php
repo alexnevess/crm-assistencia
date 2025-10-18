@@ -14,6 +14,7 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
+    //config perfil
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
@@ -30,7 +31,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/empresa/funcionarios/adiciona', [EmpresaController::class, 'adicionaFuncionario'])->name('adiciona.funcionario');//Redireciona para a view com formulário para registrar funcionário
     Route::post('/empresa/funcionarios/registra', [EmpresaController::class, 'registraFuncionario'])->name('registra.funcionario');// Redireciona para o método de registro de funcionário 
 
+    //Remover funcionário
+    Route::delete('/empresa/funcionarios/{funcionario}', [EmpresaController::class, 'removerFuncionario'])->name('funcionario.remover');
 
+    //Atualiza perfil do funcionário
+    Route::put('/funcionario/{funcionario}', [EmpresaController::class, 'updatePerfilFuncionario'])->name('funcionario.update.perfil');
 });
 
 require __DIR__.'/auth.php';

@@ -11,6 +11,7 @@ class EmpresaController extends Controller
 {
     public function create()
     {
+        //view para a criação da empresa
         return view('empresa.empresa-create');
     }
 
@@ -116,4 +117,59 @@ class EmpresaController extends Controller
         return redirect()->route('adiciona.funcionario')->with('status', "Funcionário {$funcionario->name} adicionado com sucesso à empresa {$empresa->nome}.");
     }
 
+
+    public function removerFuncionario(User $funcionario)
+    {
+        $userAdmin = Auth::user();
+
+        if ($userAdmin->empresa_id !== $funcionario->empresa_id) {
+            return redirect()->route('empresa.funcionarios')->with('error', 'Ação não autorizada.');
+        }
+
+        // Proibir o Admin de remover a si mesmo
+        if ($userAdmin->id === $funcionario->id) {
+            return redirect()->route('empresa.funcionarios')->with('error', 'Você não pode remover a si mesmo da empresa.');
+        }
+
+        $nomeFuncionario = $funcionario->name;
+        $nomeEmpresa = $userAdmin->empresaAfiliada->nome;
+
+        // Remove o vínculo: Limpa empresa_id e perfil_acesso
+        $funcionario->empresa_id = null;
+        $funcionario->perfil_acesso = null;
+        $funcionario->save();
+
+        return redirect()->route('empresa.funcionarios')->with('status', "O funcionário {$nomeFuncionario} foi removido da empresa {$nomeEmpresa}.");
+    }
+
+    public function updatePerfilFuncionario(Request $request, User $funcionario)
+    {
+        $userAdmin = Auth::user();
+
+        if ($userAdmin->empresa_id !== $funcionario->empresa_id) {
+            return redirect()->route('show.funcionarios')->with('error', 'Ação não autorizada.');
+        }
+
+        // Validação dos Dados
+        $request->validate([
+            // O perfil é obrigatório e deve ser um desses valores
+            'perfil_acesso' => 'required|in:ADMIN,ATENDENTE,TECNICO', 
+        ]);
+
+        // Atualização do Perfil
+        $funcionario->perfil_acesso = $request->perfil_acesso;
+        
+        // Proibição de rebaixar a si mesmo 
+        if ($userAdmin->id === $funcionario->id && $request->perfil_acesso !== 'ADMIN') {
+             // Reverte a alteração e exibe um erro
+             $funcionario->perfil_acesso = 'ADMIN'; 
+             $funcionario->save();
+             return redirect()->route('empresa.funcionarios')->with('error', 'Você não pode rebaixar seu próprio perfil de administrador.');
+        }
+
+        $funcionario->save();
+
+        // Redirecionamento com Status
+        return redirect()->route('empresa.funcionarios')->with('status', "Perfil de {$funcionario->name} atualizado para {$funcionario->perfil_acesso} com sucesso.");
+    }
 }
