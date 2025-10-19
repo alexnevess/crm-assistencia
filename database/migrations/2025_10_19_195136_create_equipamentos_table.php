@@ -11,15 +11,18 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('clientes', function (Blueprint $table) {
+        Schema::create('equipamentos', function (Blueprint $table) {
             $table->id();
             $table->foreignId('empresa_id')
+                  ->constrained() 
+                  ->onDelete('cascade');
+
+            $table->foreignId('cliente_id')
                   ->constrained()
-                  ->onDelete('cascade');// Se a empresa for deletada, seus clientes são deletados
-            $table->string('nome', 150);
-            $table->string('telefone', 20)->nullable();
-            $table->string('email', 150)->nullable();
-            $table->string('cpg_cnpj', 14)->nullable();
+                  ->onDelete('cascade');
+            $table->string('equip_marca', 80)->nullable();
+            $table->string('equip_modelo', 80);
+            $table->string('equip_numero_serie', 120)->nullable();
             $table->timestamps();
         });
     }
@@ -29,6 +32,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('cliente');
+        Schema::dropIfExists('equipamentos');
     }
 };
