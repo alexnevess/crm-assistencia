@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Models\Empresa;
 use App\Http\Controllers\EmpresaController;
+use App\Http\Controllers\OrdemServicoController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -36,6 +37,9 @@ Route::middleware('auth')->group(function () {
 
     //Atualiza perfil do funcionário
     Route::put('/funcionario/{funcionario}', [EmpresaController::class, 'updatePerfilFuncionario'])->name('funcionario.update.perfil');
+
+    //Rotas ordem de serviço
+    Route::resource('os', OrdemServicoController::class); //cria rotas como /os/create (formulário) e /os (POST para salvar)
 });
 
 require __DIR__.'/auth.php';
