@@ -6,7 +6,11 @@ use Illuminate\Http\Request;
 use App\Models\Cliente;
 use App\Models\Equipamento;
 use App\Models\OrdemServico;
+
+use App\Models\User;
 use Illuminate\Support\Facades\DB;
+
+
 
 class OrdemServicoController extends Controller
 {
@@ -52,77 +56,77 @@ class OrdemServicoController extends Controller
         'prazo_previsto' => 'nullable|date',
         ], [
             // Mensagens de erro personalizadas
-        'liente_nome.required' => 'O nome do cliente é obrigatório.',
-        'modelo.required' => 'O modelo do equipamento é obrigatório.',
-        'relato.required' => 'O problema relatado é obrigatório.',
+        'nome.required' => 'O nome do cliente é obrigatório.',
+        'equip_modelo.required' => 'O modelo do equipamento é obrigatório.',
+        'problema_relato.required' => 'O problema relatado é obrigatório.',
         ]);
 
         return DB::transaction(function () use ($request, $empresaId, $usuarioId) {
 
-        // Encontra a última OS desta empresa para definir o próximo número sequencial
-        $ultimoOS = OrdemServico::where('empresa_id', $empresaId)
-                                ->latest('id')
-                                ->first();
+            // 1. GERAÇÃO DO NÚMERO DA OS (LÓGICA MOVIDA PARA O MODEL)
+            $numeroOS = OrdemServico::generateNextNumero($empresaId);
+
+            // 2. BUSCA/CRIA O CLIENTE (Dados do Cliente)
+            $cliente = Cliente::firstOrNew([
+                'cnpj_cpf' => $request->input('cnpj_cpf'),
+                'empresa_id' => $empresaId,
+            ]);
+            
+            // Preenche ou atualiza os demais dados do cliente
+            $cliente->fill([
+                'nome' => $request->input('nome'),
+                'telefone' => $request->input('telefone'),
+                'email' => $request->input('email'),
+                'empresa_id' => $empresaId,
+            ]);
+
+            $cliente->save();
+
+            // 3. CRIA EQUIPAMENTO (Dados do Equipamento)
+            $equipamento = Equipamento::create([
+                'empresa_id' => $empresaId,
+                'cliente_id' => $cliente->id, // Vínculo com o Cliente
                 
-        // Determina o próximo número, baseado no último número sequencial ou começando em 1
-        $novoNumeroSeq = $ultimoOS ? (int)$ultimoOS->id + 1 : 1;
+                // CORREÇÃO: Usando nomes de coluna do DB (que parece usar prefixo)
+                'equip_marca' => $request->input('equip_marca'),
+                'equip_modelo' => $request->input('equip_modelo'),
+                'equip_numero_serie' => $request->input('equip_numero_serie'),
+            ]);
 
-        // Formata o número (Ex: 1 -> 0001) e o concatena com o ano (0001/2025)
-        $numeroFormatado = str_pad($novoNumeroSeq, 4, '0', STR_PAD_LEFT);
-        $numeroOS = "{$numeroFormatado}/" . date('Y');
-
-        $cliente = Cliente::firstOrNew([
-            'cnpj_cpf' => $request->input('cliente_cnpj_cpf'),
-            'empresa_id' => $empresaId,
-        ]);
-        
-        // Se o cliente não existir, ou se quisermos atualizar dados
-        $cliente->fill([
-            'nome' => $request->input('cliente_nome'),
-            'telefone' => $request->input('cliente_telefone'),
-            'email' => $request->input('cliente_email'),
-            'empresa_id' => $empresaId, // Garante que a empresa_id está setada
-        ]);
-
-        $cliente->save();
-
-        //Cria equipamento
-        $equipamento = Equipamento::create([
-            'empresa_id' => $empresaId,
-            'cliente_id' => $cliente->id, // Vínculo com o Cliente recém-salvo
-            'equip_marca' => $request->input('equip_marca'),
-            'equip_modelo' => $request->input('equip_modelo'),
-            'equip_numero_serie' => $request->input('equip_numero_serie'),
-        ]);
-
-        $os = OrdemServico::create([
-            'empresa_id' => $empresaId,
-            'cliente_id' => $cliente->id,
-            'equipamento_id' => $equipamento->id,
-            
-            // Usuários e Status
-            'criador_user_id' => $usuarioId, // Quem está abrindo a OS
-            // 'atualizado_por_user_id' => $usuarioId, // Pode ser preenchido aqui
-            'status' => 'ABERTA', 
-            
-            // Dados da OS
-            'numero' => $numeroOS, // O número sequencial gerado
-            'problema_relato' => $request->input('problema_relato'),
-            'prazo_previsto' => $request->input('prazo_previsto'),
+            // 4. CRIA A ORDEM DE SERVIÇO (Dados da OS)
+            $os = OrdemServico::create([
+                'empresa_id' => $empresaId,
+                'cliente_id' => $cliente->id,
+                'equipamento_id' => $equipamento->id,
+                
+                // Usuários e Status
+                'criador_user_id' => $usuarioId,
+                'status' => 'ABERTA', 
+                
+                // Dados da OS
+                'numero' => $numeroOS,
+                'problema_relato' => $request->input('problema_relato'),
+                'prazo_previsto' => $request->input('prazo_previsto'),
             ]);
 
             return redirect()->route('os.show', $os->id)
-                         ->with('success', "Ordem de Serviço #{$os->numero} criada com sucesso!");
+                            ->with('success', "Ordem de Serviço #{$os->numero} criada com sucesso!");
         });
     }
-
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
-    {
-        //
+    public function show($id)
+{
+    // Carregar as relações com eager loading
+    $os = OrdemServico::with('cliente', 'equipamento', 'criador', 'atualizador')->find($id);
+
+    if (!$os) {
+        abort(404, 'Ordem de Serviço não encontrada');
     }
+
+    return view('ordens_servico.show', compact('os'));
+}
 
     /**
      * Show the form for editing the specified resource.

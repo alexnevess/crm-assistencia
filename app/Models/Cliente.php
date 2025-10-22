@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Cliente extends Model
 {
@@ -18,20 +20,20 @@ class Cliente extends Model
     ];
 
     //Um cliente pertence a uma empresa
-    public function empresa()
+    public function empresa(): BelongsTo
     {
         return $this->belongsTo(Empresa::class);
     }
 
     //Um Cliente pode ter muitos equipamentos
-    public function equipamento()
+    public function equipamento(): hasMany
     {
-        return $this->hasmany(Equipamento::class);
+        return $this->hasMany(Equipamento::class);
     }
 
     //Um Cliente pode ter muitas ordens de serviçod
-    public function ordensServico()
+    public function ordensServico(): HasMany
     {
-        return $this->hasmany(OrdemServico::Class);
+        return $this->hasMany(OrdemServico::Class);
     }
 }
