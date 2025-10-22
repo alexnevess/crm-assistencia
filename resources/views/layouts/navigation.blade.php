@@ -18,7 +18,9 @@
                     <x-nav-link :href="route('empresa.funcionarios')" :active="request()->routeIs('empresa.funcionarios')">
                         {{ __('Funcionários') }}
                     </x-nav-link>
-                    
+                    <x-nav-link :href="route('empresa.funcionarios')" :active="request()->routeIs('empresa.funcionarios')">
+                        {{ __('Históricos de Ordens de Serviço') }}
+                    </x-nav-link>
                 </div>
             </div>
 

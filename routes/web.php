@@ -3,8 +3,12 @@
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Models\Empresa;
+use App\Models\User;
+use App\Models\Cliente;
+use App\Models\OrdemServico;
 use App\Http\Controllers\EmpresaController;
 use App\Http\Controllers\OrdemServicoController;
+use App\Notifications\InvoicePaid;
 
 Route::get('/', function () {
     return view('welcome');
@@ -13,6 +17,12 @@ Route::get('/', function () {
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
+
+// Route::get('/notification/{osId}/{clienteId}', function ($osId, $clienteId){
+//     $cliente = Cliente::find($clienteId);
+//     $ordemServico = OrdemServico::find($osId);
+//     $cliente->notify(new OsStatusNotification($cliente, $ordemServico));
+// })->name('notification');
 
 Route::middleware('auth')->group(function () {
     //config perfil

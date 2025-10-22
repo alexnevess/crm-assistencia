@@ -10,6 +10,8 @@ use App\Models\OrdemServico;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 
+use App\Notifications\OsStatusNotification;
+
 
 
 class OrdemServicoController extends Controller
@@ -117,16 +119,20 @@ class OrdemServicoController extends Controller
      * Display the specified resource.
      */
     public function show($id)
-{
-    // Carregar as relações com eager loading
-    $os = OrdemServico::with('cliente', 'equipamento', 'criador', 'atualizador')->find($id);
+    {
+        //Obtém id do usuário
+        $empresaId = auth()->user()->empresa_id;
 
-    if (!$os) {
-        abort(404, 'Ordem de Serviço não encontrada');
+        // 2. Busca a Ordem de Serviço usando o ID da OS ($id) E o ID da Empresa ($empresaId).
+        // Se a OS não for encontrada OU se ela pertencer a outra empresa, firstOrFail()
+        // irá lançar uma exceção 404 (Not Found).
+        $os = OrdemServico::with('cliente', 'equipamento', 'criador', 'atualizador')
+            ->where('id', $id)
+            ->where('empresa_id', $empresaId) 
+            ->firstOrFail();
+        
+        return view('ordens_servico.show', compact('os'));
     }
-
-    return view('ordens_servico.show', compact('os'));
-}
 
     /**
      * Show the form for editing the specified resource.
@@ -139,10 +145,33 @@ class OrdemServicoController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
-    {
-        //
+    public function update(Request $request, $id)
+{
+    $request->validate([
+        'status' => 'required|in:ABERTA,EM_ESPERA,AGUARDANDO_PEÇAS,EM_DIAGNOSTICO,EM_REPARO,PRONTA,CANCELADA',
+    ]);
+
+    $os = OrdemServico::findOrFail($id);
+    $os->status = $request->status;
+    $os->atualizado_por_user_id = auth()->id();
+
+    // Se quiser marcar a data de finalização automaticamente:
+    if (in_array($request->status, ['PRONTA', 'CANCELADA'])) {
+        $os->finalizado_em = now();
+        $os->arquivada = true;
     }
+
+    $os->save();
+
+    
+    $cliente = Cliente::find($os->cliente_id);
+    $ordemServico = OrdemServico::find($os->id);
+    //Notificação
+    $cliente->notify(new OsStatusNotification($cliente, $ordemServico));
+    
+    return redirect()->route('os.show', $os->id)->with('success', 'Status atualizado com sucesso!');
+}
+
 
     /**
      * Remove the specified resource from storage.
