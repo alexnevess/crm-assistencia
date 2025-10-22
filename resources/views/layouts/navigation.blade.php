@@ -15,10 +15,12 @@
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                         {{ __('Dashboard') }}
                     </x-nav-link>
+                    @if(Auth::user()->perfil_acesso == 'ADMIN')
                     <x-nav-link :href="route('empresa.funcionarios')" :active="request()->routeIs('empresa.funcionarios')">
                         {{ __('Funcionários') }}
                     </x-nav-link>
-                    <x-nav-link :href="route('empresa.funcionarios')" :active="request()->routeIs('empresa.funcionarios')">
+                    @endif
+                    <x-nav-link :href="route('historico')" :active="request()->routeIs('historico')">
                         {{ __('Históricos de Ordens de Serviço') }}
                     </x-nav-link>
                 </div>

@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Cliente;
 use App\Models\Equipamento;
 use App\Models\OrdemServico;
+use Illuminate\Support\Facades\Auth;
 
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
@@ -21,7 +22,44 @@ class OrdemServicoController extends Controller
      */
     public function index()
     {
-        //
+        $user = Auth::user();
+        $ordensServico = collect();
+
+        if($user->empresaAfiliada)
+        {
+            $empresaId = $user->empresaAfiliada->id;
+
+            $ordensServico = OrdemServico::with('cliente', 'equipamento')
+                             ->where('empresa_id', $empresaId)
+                             ->where('arquivada', false)
+                             ->orderBy('created_at', 'desc')
+                             ->paginate(10);
+        }
+
+        return view('dashboard', [
+            'ordensServico' => $ordensServico,
+        ]);
+    }
+
+    public function historicoIndex()
+    {
+        $user = Auth::user();
+        $ordensServico = collect();
+
+        if($user->empresaAfiliada)
+        {
+            $empresaId = $user->empresaAfiliada->id;
+
+            $ordensServico = OrdemServico::with('cliente', 'equipamento')
+                             ->where('empresa_id', $empresaId)
+                             ->where('arquivada', true)
+                             ->orderBy('created_at', 'desc')
+                             ->paginate(10);
+        }
+
+        return view('ordens_servico.arquivadas', [
+            'ordensServico' => $ordensServico,
+        ]);
     }
 
     /**

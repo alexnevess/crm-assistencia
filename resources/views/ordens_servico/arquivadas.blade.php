@@ -28,15 +28,10 @@
                         <p class="mt-0 text-gray-600 dark:text-gray-400">
                             Empresa Atual: <strong>{{ Auth::user()->empresaAfiliada->nome }}</strong>
                         </p>
-                        <a
-                            href="{{ route('os.create') }}"
-                            class="inline-block px-5 py-1.5 dark:text-[#EDEDEC] border-[#19140035] hover:border-[#1915014a] border text-[#1b1b18] dark:border-[#3E3E3A] dark:hover:border-[#62605b] rounded-sm text-sm leading-normal transition duration-150">
-                            Registrar Ordem de Serviço +
-                        </a>
                     </div>
 
                     <!-- LISTAGEM DE ORDENS DE SERVIÇO ATIVAS -->
-                    <h3 class="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-200 border-t pt-4">Ordens de Serviço Ativas</h3>
+                    <h3 class="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-200 border-t pt-4">Ordens de Serviço Arquivadas</h3>
 
                     @if ($ordensServico->isEmpty())
                         <div class="p-4 text-center border rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-600 dark:text-gray-300">
