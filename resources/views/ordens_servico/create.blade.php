@@ -1,18 +1,18 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+        <h2 class="font-semibold text-xl text-white leading-tight">
             {{ __('Abrir Nova Ordem de Serviço') }}
         </h2>
     </x-slot>
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
-
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="p-6 text-gray-900 dark:text-gray-100">
                 <form method="POST" action="{{ route('os.store') }}">
                     @csrf
 
-                    <h3 class="text-lg font-medium text-gray-900 mb-4 border-b pb-2">1. Informações do Cliente</h3>
+                    <h3 class="text-lg font-medium mb-4 border-b pb-2">1. Informações do Cliente</h3>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
@@ -42,7 +42,7 @@
                         </div>
                     </div>
                     
-                    <h3 class="text-lg font-medium text-gray-900 mt-8 mb-4 border-b pb-2">2. Dados do Equipamento</h3>
+                    <h3 class="text-lg font-medium mt-8 mb-4 border-b pb-2">2. Dados do Equipamento</h3>
                     
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div>
@@ -64,7 +64,7 @@
                         </div>
                     </div>
 
-                    <h3 class="text-lg font-medium text-gray-900 mt-8 mb-4 border-b pb-2">3. Detalhes da OS</h3>
+                    <h3 class="text-lg font-medium mt-8 mb-4 border-b pb-2">3. Detalhes da OS</h3>
 
                     <div class="mt-4">
                         <x-input-label for="problema_relato" :value="__('Problema Relatado*')" />
@@ -84,6 +84,7 @@
                         </x-primary-button>
                     </div>
                 </form>
+                </div>
             </div>
         </div>
     </div>
