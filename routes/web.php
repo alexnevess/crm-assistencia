@@ -27,6 +27,8 @@ Route::get('/historico', [OrdemServicoController::class, 'historicoIndex'])
     //Rotas com middleware que garante que o usuário é ADMIN para acessar telas relacionadas ao usuário
 Route::middleware(['auth', 'admin'])->group(function () {
 
+    Route::patch('/empresa/{id}', [EmpresaController::class, 'update'])->name('empresa.update');
+
     //Redireciona para view da lista de funcionários
     Route::get('/empresa/lista/funcionarios', [EmpresaController::class, 'showFuncionarios'])->name('empresa.funcionarios'); 
 
@@ -38,7 +40,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
 
     // Redireciona para o método de registro de funcionário em EmpresaController
     Route::post('/empresa/funcionarios/registra', [EmpresaController::class, 'registraFuncionario'])->name('registra.funcionario');
-    
+
     //Atualiza perfil do funcionário
     Route::put('/funcionario/{funcionario}', [EmpresaController::class, 'updatePerfilFuncionario'])->name('funcionario.update.perfil');
 });

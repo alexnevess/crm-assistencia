@@ -9,6 +9,9 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
 
+use App\Models\Empresa;
+use App\Models\User;
+
 class ProfileController extends Controller
 {
     /**
@@ -16,8 +19,11 @@ class ProfileController extends Controller
      */
     public function edit(Request $request): View
     {
+        $empresa = $request->user()->empresaAfiliada;
         return view('profile.edit', [
             'user' => $request->user(),
+            'empresa' => $empresa,
+            
         ]);
     }
 

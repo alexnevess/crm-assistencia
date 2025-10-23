@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Empresa;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
+use App\Http\Controllers\Middleware\IsAdmin;
 
 class EmpresaController extends Controller
 {
@@ -171,5 +172,26 @@ class EmpresaController extends Controller
 
         // Redirecionamento com Status
         return redirect()->route('empresa.funcionarios')->with('status', "Perfil de {$funcionario->name} atualizado para {$funcionario->perfil_acesso} com sucesso.");
+    }
+
+    public function update(Request $request, $id)
+    {
+        $user = auth()->user();
+
+        if (!$user || !$user->isAdmin()) {
+            abort(403, 'Acesso negado: apenas administradores podem modificar os dados da empresa.');
+        }
+
+        $request->validate([
+            'empresa_nome' => 'required|string|max:255',
+            'cnpj' => 'required|string|max:18',
+        ]);
+
+        $empresa = Empresa::findOrFail($id);
+        $empresa->nome = $request->empresa_nome;
+        $empresa->cpf_cnpj = $request->cnpj;
+        $empresa->save();
+
+        return back()->with('status', 'profile-updated');
     }
 }
